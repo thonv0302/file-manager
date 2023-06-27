@@ -30,6 +30,7 @@ const { listBlock, listBreadCrumb } = storeToRefs(blockStore);
 const displayDocumentType = useLocalStorage('display-document-type', 'grid');
 
 const progressUploadFiles = ref([]);
+const files = ref([]);
 const previewFiles = async (e) => {
   let filesNameExist = [...e.target.files].map((file) => ({
     name: file.name,
@@ -40,7 +41,7 @@ const previewFiles = async (e) => {
     filesNameExist.map((file) => blockStore.generateName(file))
   );
 
-  let files = [...e.target.files].map((file, index) => ({
+  files.value = [...e.target.files].map((file, index) => ({
     name: nameArr[index],
     path: user.value.user._id + '/documents/' + currentFolderName.value + nameArr[index],
     file,
@@ -49,15 +50,15 @@ const previewFiles = async (e) => {
 
   // Get url uploads
   const { data } = await awsService.getUploadUrls(
-    files.map((file) => file.path)
+    files.value.map((file) => file.path)
   );
 
-  files = files.map((file, index) => ({
+  files.value = files.value.map((file, index) => ({
     ...file,
     path: data.metadata.urlPuts[index]
   }))
 
-  await Promise.all(files.map(file => awsService.uploadFile(file.file, file.path, (percent) => {
+  await Promise.all(files.value.map(file => awsService.uploadFile(file.file, file.path, (percent) => {
     file.percent = percent
   })))
 };
@@ -197,6 +198,7 @@ const currentFolderName = computed(() => {
       <ErrorMessage name="folder" class="mt-2 text-sm text-red-600" />
     </VeeForm>
   </Modal>
+  <pre>{{ files }}</pre>
   <pre>{{ currentFolderName }}</pre>
   <pre>{{ breadCrumb }}</pre>
 </template>

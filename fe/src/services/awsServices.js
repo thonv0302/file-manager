@@ -10,7 +10,9 @@ const getUrl = async (key) => {
       },
       addRequestToken
     );
-  } catch (error) { }
+  } catch (error) {
+    throw new Error(error)
+  }
 };
 
 const getUploadUrls = async (keys) => {
@@ -30,7 +32,7 @@ const getUploadUrls = async (keys) => {
 
 const uploadFile = async (file, url, cb) => {
   try {
-    return apiClient.put(url, file, {
+    return await apiClient.put(url, file, {
       headers: { 'Content-Type': file.type },
       onUploadProgress: (processEvent) => {
         const percent = (processEvent.loaded * 100) / processEvent.total;
