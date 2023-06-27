@@ -10,7 +10,7 @@ const getUrl = async (key) => {
       },
       addRequestToken
     );
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const getUploadUrls = async (keys) => {
@@ -22,22 +22,22 @@ const getUploadUrls = async (keys) => {
       },
       addRequestToken
     );
-  } catch (error) {}
+  } catch (error) {
+    throw new Error(error)
+  }
 };
 
-const uploadMutipleFiles = async (urls) => {};
 
 const uploadFile = async (file, url, cb) => {
   try {
     return apiClient.put(url, file, {
       headers: { 'Content-Type': file.type },
       onUploadProgress: (processEvent) => {
-        // console.log('processEvent: ', processEvent);
         const percent = (processEvent.loaded * 100) / processEvent.total;
         cb(percent);
       },
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 export default {

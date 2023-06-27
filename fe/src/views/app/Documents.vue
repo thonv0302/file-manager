@@ -36,36 +36,30 @@ const previewFiles = async (e) => {
     parentFolder: route.params.blockId ?? '',
   }));
 
-  const arr = await Promise.all(
+  const nameArr = await Promise.all(
     filesNameExist.map((file) => blockStore.generateName(file))
   );
 
-  console.log('filesNameExist: ', arr);
-  // const files = [...e.target.files].map((file) => ({
-  //   path: user.value.user._id + '/documents/' + file.name,
-  //   file,
-  // }));
+  let files = [...e.target.files].map((file, index) => ({
+    name: nameArr[index],
+    path: user.value.user._id + '/documents/' + currentFolderName.value + nameArr[index],
+    file,
+    percent: 0,
+  }));
 
   // Get url uploads
-  // const { data } = await awsService.getUploadUrls(
-  //   files.map((file) => file.path)
-  // );
+  const { data } = await awsService.getUploadUrls(
+    files.map((file) => file.path)
+  );
 
-  // console.log('data: ', data);
+  files = files.map((file, index) => ({
+    ...file,
+    path: data.metadata.urlPuts[index]
+  }))
 
-  // const urlMapUsers = data.metadata.urlPuts.map(
-  //   (urlPut) => user.value.user._id + '/documents/' + file.name
-  // );
-  // console.log('urlMapUsers: ', urlMapUsers);
-  //
-
-  // const file = e.target.files[0];
-  // const { data } = await awsService.getUrl(
-  //   user.value.user._id + '/documents/' + file.name
-  // );
-  // await awsService.uploadFile(file, data.metadata.uploadURL, (percent) => {
-  //   console.log('percent: ', percent);
-  // });
+  await Promise.all(files.map(file => awsService.uploadFile(file.file, file.path, (percent) => {
+    file.percent = percent
+  })))
 };
 
 const isOpenCreateFolder = ref(false);
@@ -113,89 +107,72 @@ const breadCrumb = computed(() => [
   },
   ...listBreadCrumb.value,
 ]);
+
+const currentFolderName = computed(() => {
+  const id = route.params.blockId;
+  const breadCrumbFound = breadCrumb.value.find(bread => bread.id === id)
+  if (breadCrumbFound) {
+    return `${breadCrumbFound.name}/`
+  }
+  return '';
+})
 </script>
 <template>
   <div class="py-6">
-    <div
-      class="max-w-7xl flex justify-between items-center mx-auto px-4 sm:px-6 md:px-8 mb-6"
-    >
+    <div class="max-w-7xl flex justify-between items-center mx-auto px-4 sm:px-6 md:px-8 mb-6">
       <div class="flex">
         <button @click="router.go(-1)" class="p-2">
           <ArrowLeftIcon class="h-4 w-4 mr-2" />
         </button>
         <BreadCrumb :pages="breadCrumb" />
       </div>
-      <button
-        @click="isOpenCreateFolder = true"
-        class="flex items-center rounded-md px-3 p-1.5 text-sm font-semibold leading-6 text-white bg-indigo-600 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-indigo-500 focus-visible:outline-indigo-600"
-      >
+      <button @click="isOpenCreateFolder = true"
+        class="flex items-center rounded-md px-3 p-1.5 text-sm font-semibold leading-6 text-white bg-indigo-600 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-indigo-500 focus-visible:outline-indigo-600">
         <PlusIcon class="h-4 w-4 mr-2" /><span>Folder</span>
       </button>
     </div>
-    <div
-      class="max-w-7xl flex justify-between items-center mx-auto px-4 sm:px-6 md:px-8"
-    >
+    <div class="max-w-7xl flex justify-between items-center mx-auto px-4 sm:px-6 md:px-8">
       <div>filter</div>
       <div>
-        <button
-          @click="displayDocumentType = 'grid'"
-          v-if="displayDocumentType != 'grid'"
-        >
+        <button @click="displayDocumentType = 'grid'" v-if="displayDocumentType != 'grid'">
           <TableCellsIcon class="h-8 w-8" />
         </button>
-        <button
-          @click="displayDocumentType = 'list'"
-          v-if="displayDocumentType != 'list'"
-        >
+        <button @click="displayDocumentType = 'list'" v-if="displayDocumentType != 'list'">
           <ListBulletIcon class="h-8 w-8" />
         </button>
       </div>
     </div>
-    <div
-      :class="[
-        'max-w-7xl mx-auto px-4  lg:px-8  md:w-full',
+    <div :class="[
+      'max-w-7xl mx-auto px-4  lg:px-8  md:w-full',
+      {
+        'w-[calc(100vw-32px)] overflow-y-auto': displayDocumentType == 'list',
+      },
+    ]">
+      <div :class="[
+        'py-4',
         {
-          'w-[calc(100vw-32px)] overflow-y-auto': displayDocumentType == 'list',
+          'min-w-[500px]': displayDocumentType == 'list',
         },
-      ]"
-    >
-      <div
-        :class="[
-          'py-4',
-          {
-            'min-w-[500px]': displayDocumentType == 'list',
-          },
-        ]"
-      >
-        <div
-          v-if="displayDocumentType == 'list'"
-          class="flex justify-between gap-x-4"
-        >
+      ]">
+        <div v-if="displayDocumentType == 'list'" class="flex justify-between gap-x-4">
           <h3 class="flex-1 font-semibold mb-2">Title</h3>
           <h3 class="flex-1 font-semibold mb-2">Image</h3>
           <h3 class="flex-1 font-semibold mb-2">Size</h3>
           <h3 class="flex-1 font-semibold mb-2">Created at</h3>
         </div>
-        <ul
-          role="list"
-          :class="[
+        <ul role="list" :class="[
+          {
+            'grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8':
+              displayDocumentType == 'grid',
+          },
+        ]">
+          <li v-for="file in listBlock" :key="file._id" :class="[
+            'relative',
             {
-              'grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8':
-                displayDocumentType == 'grid',
+              'flex justify-between items-center gap-x-4 mb-2':
+                displayDocumentType == 'list',
             },
-          ]"
-        >
-          <li
-            v-for="file in listBlock"
-            :key="file._id"
-            :class="[
-              'relative',
-              {
-                'flex justify-between items-center gap-x-4 mb-2':
-                  displayDocumentType == 'list',
-              },
-            ]"
-          >
+          ]">
             <GridItem :item="file" v-if="displayDocumentType == 'grid'" />
             <ListItem :item="file" v-else />
           </li>
@@ -203,41 +180,24 @@ const breadCrumb = computed(() => [
       </div>
     </div>
     <button
-      class="fixed bottom-6 right-6 md:bottom-12 md:right-12 flex items-center rounded-md px-4 p-2 text-sm font-semibold leading-6 text-white bg-indigo-600 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-indigo-500 focus-visible:outline-indigo-600"
-    >
+      class="fixed bottom-6 right-6 md:bottom-12 md:right-12 flex items-center rounded-md px-4 p-2 text-sm font-semibold leading-6 text-white bg-indigo-600 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-indigo-500 focus-visible:outline-indigo-600">
       <ArrowUpTrayIcon class="h-4 w-4 mr-2" /> Upload
-      <input
-        class="absolute top-0 left-0 right-0 bottom-0 opacity-0"
-        type="file"
-        multiple
-        @change="previewFiles"
-      />
+      <input class="absolute top-0 left-0 right-0 bottom-0 opacity-0" type="file" multiple @change="previewFiles" />
     </button>
   </div>
-  <Modal
-    title="New folder"
-    @save="createFolder"
-    v-if="isOpenCreateFolder"
-    @close="isOpenCreateFolder = false"
-  >
+  <Modal title="New folder" @save="createFolder" v-if="isOpenCreateFolder" @close="isOpenCreateFolder = false">
     <VeeForm v-slot="{ errors }">
-      <VeeField
-        name="folder"
-        type="text"
-        rules="required"
-        v-model="folderName"
-        ref="form"
-        :class="[
-          'block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none',
-          {
-            'ring-red-500 border-red-500 focus:ring-red-500 focus:border-red-500':
-              errors.folder,
-          },
-        ]"
-      />
+      <VeeField name="folder" type="text" rules="required" v-model="folderName" ref="form" :class="[
+        'block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none',
+        {
+          'ring-red-500 border-red-500 focus:ring-red-500 focus:border-red-500':
+            errors.folder,
+        },
+      ]" />
       <ErrorMessage name="folder" class="mt-2 text-sm text-red-600" />
     </VeeForm>
   </Modal>
+  <pre>{{ currentFolderName }}</pre>
   <pre>{{ breadCrumb }}</pre>
 </template>
 
