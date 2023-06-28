@@ -7,7 +7,7 @@ const login = ({ email, password }) => {
       password,
     });
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -18,7 +18,7 @@ const register = ({ email, password }) => {
       password,
     });
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 

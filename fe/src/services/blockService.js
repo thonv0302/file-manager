@@ -15,7 +15,7 @@ const getBlock = async (params, query = {}) => {
 
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -25,7 +25,7 @@ const createBlock = async (body) => {
     response = await apiClient.post('block', body, addRequestToken);
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -35,7 +35,7 @@ const getOneBlock = async (blockId) => {
     response = await apiClient.get(`block/getOne/${blockId}`, addRequestToken);
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -45,7 +45,7 @@ const updateBlock = async (blockId, body) => {
     response = await apiClient.put(`block/${blockId}`, body, addRequestToken);
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -58,7 +58,7 @@ const generateBreadcrumb = async (blockId) => {
     );
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 
@@ -72,7 +72,7 @@ const generateName = async (body) => {
     );
     return response.data.metadata;
   } catch (error) {
-    console.log('error: ', error);
+    throw new Error(error);
   }
 };
 

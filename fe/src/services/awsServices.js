@@ -2,6 +2,7 @@ import apiClient from './index';
 import addRequestToken from '../helpers/addRequestToken';
 
 const getUrl = async (key) => {
+  let response;
   try {
     return await apiClient.post(
       'url',
@@ -11,24 +12,25 @@ const getUrl = async (key) => {
       addRequestToken
     );
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
 };
 
 const getUploadUrls = async (keys) => {
+  let response;
   try {
-    return await apiClient.post(
+    response = await apiClient.post(
       'put-urls',
       {
         keys,
       },
       addRequestToken
     );
+    return response.data.metadata;
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
 };
-
 
 const uploadFile = async (file, url, cb) => {
   try {
@@ -39,7 +41,9 @@ const uploadFile = async (file, url, cb) => {
         cb(percent);
       },
     });
-  } catch (error) { }
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export default {
