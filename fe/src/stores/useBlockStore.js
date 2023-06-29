@@ -8,6 +8,7 @@ export const useBlockStore = defineStore('blockStore', () => {
   const listBlock = ref([]);
   const listBreadCrumb = ref([]);
   const getBlock = async (params, query = {}) => {
+    console.log('query: ', query);
     listBlock.value = await blockService.getBlock(params, query);
   };
 

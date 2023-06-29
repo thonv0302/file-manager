@@ -5,10 +5,10 @@ const getBlock = async (params, query = {}) => {
   let response;
   let blockId = '';
   if (params.blockId) {
-    blockId = params.blockId;
+    blockId = `/${params.blockId}`;
   }
   try {
-    response = await apiClient.get(`block/${blockId}`, {
+    response = await apiClient.get(`block${blockId}`, {
       params: query,
       ...addRequestToken,
     });

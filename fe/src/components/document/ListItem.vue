@@ -24,7 +24,7 @@ const routeFolder = () => {
 </script>
 
 <template>
-  <p @click="routeFolder" class="text-sm flex-1 cursor-pointer">
+  <p @click="routeFolder" class="text-sm flex-1 cursor-pointer name">
     {{ item.name }}
   </p>
   <div @click="routeFolder" class="flex-1 cursor-pointer">
@@ -38,4 +38,10 @@ const routeFolder = () => {
   </p>
 </template>
 
-<style scoped></style>
+<style scoped>
+.name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

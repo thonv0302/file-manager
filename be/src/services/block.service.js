@@ -1,8 +1,10 @@
 const blockModel = require('../models/block.model');
 const { Types } = require('mongoose');
 const { ErrorResponse } = require('../core/error.response');
-
+const { omit } = require('lodash');
 const { getNameIndexAndExtension } = require('../utils/cutSuffixName');
+const { sortBy } = require('../helpers/sortBy');
+
 class BlockModel {
   getMany = async (req) => {
     const query = {
@@ -10,7 +12,10 @@ class BlockModel {
       parentFolder: req.params.parentFolder || '',
     };
 
-    return await blockModel.find(query).sort({ createdAt: -1 });
+    const objSort = sortBy(query);
+    return await blockModel
+      .find(omit(query, ['_sort', '_order']))
+      .sort({ createdAt: -1, ...objSort });
   };
 
   getOne = async (blockId) => {

@@ -42,7 +42,7 @@ const routeFolder = () => {
     </button>
   </div>
   <p
-    class="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none"
+    class="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none name"
   >
     {{ item.name }}
   </p>
@@ -51,4 +51,10 @@ const routeFolder = () => {
   </p>
 </template>
 
-<style scoped></style>
+<style scoped>
+.name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
