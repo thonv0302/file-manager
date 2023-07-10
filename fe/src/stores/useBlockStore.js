@@ -1,14 +1,11 @@
 import { defineStore } from 'pinia';
-import { useLocalStorage } from '@vueuse/core';
 import blockService from '../services/blockService';
-import { notify } from '@kyvg/vue3-notification';
 import { ref } from 'vue';
 
 export const useBlockStore = defineStore('blockStore', () => {
   const listBlock = ref([]);
   const listBreadCrumb = ref([]);
   const getBlock = async (params, query = {}) => {
-    console.log('query: ', query);
     listBlock.value = await blockService.getBlock(params, query);
   };
 
@@ -36,6 +33,14 @@ export const useBlockStore = defineStore('blockStore', () => {
     return await blockService.generateName(body);
   };
 
+  const caclSizeFolder = async (blockId) => {
+    return await blockService.calculateSize(blockId);
+  };
+
+  const deleteBlocks = async (listBlockId) => {
+    return await blockService.deleteBlocks(listBlockId);
+  };
+
   return {
     listBlock,
     getBlock,
@@ -46,5 +51,7 @@ export const useBlockStore = defineStore('blockStore', () => {
     getBreadcrumb,
     listBreadCrumb,
     generateName,
+    caclSizeFolder,
+    deleteBlocks,
   };
 });

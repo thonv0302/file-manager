@@ -1,13 +1,20 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { useLocalStorage } from '@vueuse/core';
-import { XMarkIcon } from '@heroicons/vue/24/solid';
+import {
+  XMarkIcon,
+  HomeIcon,
+  DocumentDuplicateIcon,
+} from '@heroicons/vue/24/solid';
 import useDevice from '../composables/useDevice';
 
 const route = useRoute();
 const { smAndSmaller } = useDevice();
 
-const navigation = [{ name: 'Documents', href: '/document', icon: '' }];
+const navigation = [
+  { name: 'Home', href: '/home', icon: HomeIcon },
+  { name: 'Documents', href: '/document', icon: DocumentDuplicateIcon },
+];
 
 const showSidebar = useLocalStorage('show-sidebar');
 </script>
@@ -54,6 +61,7 @@ const showSidebar = useLocalStorage('show-sidebar');
             },
           ]"
         >
+          <component class="w-5 h-5 mr-2 text-indigo-600" :is="item.icon" />
           {{ item.name }}
         </RouterLink>
       </nav>

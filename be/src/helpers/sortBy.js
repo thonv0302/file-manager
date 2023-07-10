@@ -5,11 +5,15 @@ const sortBy = ({ _sort, _order }) => {
   };
   if (_sort && _order) {
     return {
+      isFolder: -1,
       [_sort]: order[_order],
     };
   }
 
-  return {};
+  return {
+    isFolder: -1,
+    createdAt: -1,
+  };
 };
 
 module.exports = {

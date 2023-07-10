@@ -13,9 +13,8 @@ class BlockModel {
     };
 
     const objSort = sortBy(query);
-    return await blockModel
-      .find(omit(query, ['_sort', '_order']))
-      .sort({ createdAt: -1, ...objSort });
+    const queryObj = omit(query, ['_sort', '_order']);
+    return await blockModel.find(queryObj).sort(objSort);
   };
 
   getOne = async (blockId) => {
@@ -87,6 +86,55 @@ class BlockModel {
     const generateName = await this.addNameWithSuffix(body);
     body.name = generateName;
     return await blockModel.create(body);
+  };
+
+  calculateSize = async (parentFolder) => {
+    let blockCurrentId = parentFolder;
+    while (blockCurrentId) {
+      let dataFound = await blockModel.findOne({
+        _id: blockCurrentId,
+      });
+
+      if (dataFound) {
+        const blocks = await blockModel.find({
+          parentFolder: blockCurrentId,
+        });
+
+        //-- Update folder size
+        const totalSize = blocks.reduce((total, block) => {
+          return total + block.size;
+        }, 0);
+
+        await blockModel.updateOne(
+          { _id: blockCurrentId },
+          {
+            size: totalSize,
+          }
+        );
+        blockCurrentId = dataFound.parentFolder;
+      } else {
+        blockCurrentId = null;
+      }
+    }
+
+    return {
+      msg: 'Update size successful!',
+    };
+  };
+
+  deleteBlocks = async (listBlockId) => {
+    return await blockModel.deleteMany({
+      $or: [
+        { _id: { $in: listBlockId } },
+        {
+          ancestorFolders: {
+            $elemMatch: {
+              $in: listBlockId,
+            },
+          },
+        },
+      ],
+    });
   };
 }
 

@@ -29,8 +29,7 @@ const userSchema = new Schema(
     fileUrl: {
       type: String,
       required: true,
-      default:
-        'https://direct-upload-files.s3.ap-southeast-1.amazonaws.com/icons8-folder-480.png',
+      default: '',
     },
     parentFolder: {
       type: Schema.Types.Mixed,
@@ -39,13 +38,9 @@ const userSchema = new Schema(
     },
     ancestorFolders: [
       {
-        ancestorId: {
-          type: Schema.Types.ObjectId,
-          ref: 'Block',
-        },
-        ancestorName: {
-          type: String,
-        },
+        type: Schema.Types.Mixed,
+        ref: 'Block',
+        default: '',
       },
     ],
   },

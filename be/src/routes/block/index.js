@@ -14,4 +14,9 @@ router.get(
   '/generateBread/:blockId',
   asyncHandler(BlockController.generateBreadcrumbArr)
 );
+router.get(
+  '/calcFolderParent/:parentFolder',
+  asyncHandler(BlockController.caclSizeFolder)
+);
+router.delete('', asyncHandler(BlockController.deleteBlocks));
 module.exports = router;

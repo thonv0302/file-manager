@@ -1,6 +1,7 @@
 <script setup>
 import { useTimeAgo } from '@vueuse/core';
 import { useRouter } from 'vue-router';
+import convertFileSize from '../../utils/convertFileSize';
 
 const router = useRouter();
 
@@ -32,7 +33,9 @@ const routeFolder = () => {
       <img :src="item.fileUrl" />
     </div>
   </div>
-  <p @click="routeFolder" class="text-sm flex-1">{{ item.size }}</p>
+  <p @click="routeFolder" class="text-sm flex-1">
+    {{ convertFileSize(item.size) }}
+  </p>
   <p @click="routeFolder" class="text-sm flex-1">
     {{ useTimeAgo(item.createdAt) }}
   </p>

@@ -12,7 +12,7 @@ const route = useRoute();
 </script>
 <template>
   <nav class="flex" aria-label="Breadcrumb">
-    <ol role="list" class="flex items-center space-x-4">
+    <ol role="list" class="flex items-center space-x-1">
       <li v-for="(page, index) in pages" :key="page.name">
         <div class="flex items-center">
           <svg
@@ -30,7 +30,7 @@ const route = useRoute();
             :class="[
               'font-medium text-gray-500 hover:text-gray-700',
               {
-                'ml-4': index !== 0,
+                'ml-1': index !== 0,
               },
             ]"
             >{{ page.name }}</RouterLink

@@ -37,6 +37,18 @@ class BlockController {
       metadata: await BlockService.addNameWithSuffix(req.body),
     }).send(res);
   };
+
+  caclSizeFolder = async (req, res, next) => {
+    new SuccessResponse({
+      metadata: await BlockService.calculateSize(req.params.parentFolder),
+    }).send(res);
+  };
+
+  deleteBlocks = async (req, res, next) => {
+    new SuccessResponse({
+      metadata: await BlockService.deleteBlocks(req.body.listBlockId),
+    }).send(res);
+  };
 }
 
 module.exports = new BlockController();

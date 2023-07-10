@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Custom from '../src/layouts/Custom.vue';
 import Default from '../src/layouts/Default.vue';
@@ -15,6 +15,16 @@ const layoutChose = computed(() => {
   } else {
     return Custom;
   }
+});
+
+onMounted(() => {
+  window.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('contextmenu');
 });
 </script>
 

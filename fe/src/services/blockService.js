@@ -76,6 +76,32 @@ const generateName = async (body) => {
   }
 };
 
+const calculateSize = async (blockId) => {
+  let response;
+  try {
+    response = await apiClient.get(
+      `block/calcFolderParent/${blockId}`,
+      addRequestToken
+    );
+    return response.data.metadata;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const deleteBlocks = async (listBlockId) => {
+  let response;
+  try {
+    response = await apiClient.delete('block', {
+      data: {
+        listBlockId,
+      },
+      ...addRequestToken,
+    });
+    return response.data;
+  } catch (error) {}
+};
+
 export default {
   getBlock,
   createBlock,
@@ -83,4 +109,6 @@ export default {
   updateBlock,
   generateBreadcrumb,
   generateName,
+  calculateSize,
+  deleteBlocks,
 };
